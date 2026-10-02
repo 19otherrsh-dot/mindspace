@@ -1,0 +1,909 @@
+<title>The Retention Gap</title>
+
+<style>
+  /* ---------------------------------------------------------------
+     Palette lifted from apps/mobile/src/theme so the report reads as
+     part of the product rather than a generic deck.
+     Light is the base; dark redefines tokens only.
+  ---------------------------------------------------------------- */
+  :root {
+    --ink:        #0B1026;
+    --ink-soft:   #273056;
+    --muted:      #5A6280;
+    --faint:      #8189A3;
+    --ground:     #F7F8FC;
+    --surface:    #FFFFFF;
+    --line:       #E1E5F0;
+    --line-soft:  #EFF1F8;
+    --accent:     #5B7FFF;
+    --accent-ink: #3B5BD9;
+    --second:     #8E7CFF;
+    --warm:       #F2A65A;
+    --warm-ink:   #A8641E;
+    --mint:       #4FD1A5;
+    --mint-ink:   #1C7A5A;
+    --rose:       #E86A92;
+    --shadow:     0 1px 2px rgba(11,16,38,.05), 0 8px 24px -12px rgba(11,16,38,.14);
+
+    --serif: Charter, "Bitstream Charter", "Iowan Old Style", Georgia, Cambria, "Times New Roman", serif;
+    --sans:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono:  ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 68ch;
+    --wide: 1140px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:        #F2F4FA;
+      --ink-soft:   #C6CCDE;
+      --muted:      #9AA2BC;
+      --faint:      #79819D;
+      --ground:     #0B1026;
+      --surface:    #131A35;
+      --line:       #273056;
+      --line-soft:  #1C2445;
+      --accent:     #8AA4FF;
+      --accent-ink: #A9BCFF;
+      --second:     #A99BFF;
+      --warm:       #F2A65A;
+      --warm-ink:   #F5BC80;
+      --mint:       #4FD1A5;
+      --mint-ink:   #6FE0BC;
+      --rose:       #F08AAB;
+      --shadow:     0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink:        #F2F4FA;
+    --ink-soft:   #C6CCDE;
+    --muted:      #9AA2BC;
+    --faint:      #79819D;
+    --ground:     #0B1026;
+    --surface:    #131A35;
+    --line:       #273056;
+    --line-soft:  #1C2445;
+    --accent:     #8AA4FF;
+    --accent-ink: #A9BCFF;
+    --second:     #A99BFF;
+    --warm:       #F2A65A;
+    --warm-ink:   #F5BC80;
+    --mint:       #4FD1A5;
+    --mint-ink:   #6FE0BC;
+    --rose:       #F08AAB;
+    --shadow:     0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; }
+  .col  { max-width: var(--measure); }
+
+  /* ---------- masthead ---------- */
+  header.masthead {
+    padding: 72px 0 40px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 56px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin: 0 0 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+  }
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(2.3rem, 5.2vw, 3.4rem);
+    font-weight: 760;
+    letter-spacing: -.032em;
+    line-height: 1.04;
+    text-wrap: balance;
+    margin: 0 0 22px;
+    max-width: 20ch;
+  }
+  .standfirst {
+    font-size: 1.2rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .standfirst strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- sections ---------- */
+  section { margin: 0 0 68px; }
+  h2 {
+    font-family: var(--sans);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin: 0 0 8px;
+  }
+  .sec-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 20px;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-size: 1.12rem;
+    font-weight: 660;
+    letter-spacing: -.012em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  p { margin: 0 0 18px; }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* ---------- the four-zone churn strip ---------- */
+  .zones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 28px 0 24px;
+  }
+  .zone { background: var(--surface); padding: 20px 20px 22px; }
+  .zone .n {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: var(--faint);
+    display: block;
+    margin-bottom: 10px;
+  }
+  .zone h4 {
+    font-family: var(--sans);
+    font-size: .97rem;
+    font-weight: 660;
+    margin: 0 0 7px;
+    letter-spacing: -.008em;
+  }
+  .zone p { font-size: .89rem; line-height: 1.5; color: var(--muted); margin: 0; }
+
+  /* ---------- comparison matrix ---------- */
+  .scroller {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    margin: 26px 0 20px;
+  }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; }
+  caption { text-align: left; padding: 0 0 12px; color: var(--muted); font-size: .9rem; }
+  th, td {
+    text-align: left;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 500;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.app {
+    font-family: var(--sans);
+    font-weight: 640;
+    font-size: .96rem;
+    white-space: nowrap;
+  }
+  td { font-size: .93rem; line-height: 1.5; color: var(--ink-soft); }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .87rem; white-space: nowrap; }
+
+  /* ---------- recommendations ---------- */
+  .recs { display: flex; flex-direction: column; gap: 18px; margin-top: 26px; }
+  .rec {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 22px 24px 24px;
+    box-shadow: var(--shadow);
+  }
+  .rec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .rank {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .chips { display: flex; gap: 7px; margin-left: auto; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .chip.build  { color: var(--muted);    border-color: var(--line); }
+  .chip.small  { color: var(--mint-ink); border-color: var(--mint); }
+  .chip.mid    { color: var(--warm-ink); border-color: var(--warm); }
+  .chip.large  { color: var(--rose);     border-color: var(--rose); }
+  .chip.done   { color: var(--mint-ink); border-color: var(--mint); background: color-mix(in srgb, var(--mint) 12%, transparent); font-weight: 600; }
+
+  /* A shipped recommendation keeps its rationale but stops asking to be read. */
+  .rec.shipped-rec { border-color: var(--mint); }
+  .rec.shipped-rec .rank { color: var(--mint-ink); }
+  .rec p { font-size: .96rem; margin: 0 0 14px; }
+  .rec p:last-child { margin-bottom: 0; }
+
+  .why {
+    border-left: 2px solid var(--accent);
+    padding: 2px 0 2px 16px;
+    margin: 0 0 14px;
+    color: var(--ink-soft);
+    font-size: .93rem;
+  }
+  .why b {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+  .have {
+    font-family: var(--sans);
+    font-size: .87rem;
+    color: var(--muted);
+    background: var(--line-soft);
+    border-radius: 8px;
+    padding: 11px 14px;
+    margin: 0;
+  }
+  .have b { color: var(--ink-soft); font-weight: 620; }
+  code {
+    font-family: var(--mono);
+    font-size: .86em;
+    background: var(--line-soft);
+    padding: 1.5px 5px;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+  .have code { background: var(--surface); }
+
+  /* ---------- shipped list ---------- */
+  .shipped {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .shipped li {
+    font-family: var(--sans);
+    font-size: .86rem;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 13px;
+  }
+
+  /* ---------- not-now list ---------- */
+  .skip { border-top: 1px solid var(--line); margin-top: 26px; }
+  .skip details {
+    border-bottom: 1px solid var(--line);
+    padding: 15px 2px;
+  }
+  .skip summary {
+    font-family: var(--sans);
+    font-weight: 620;
+    font-size: 1rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .skip summary::-webkit-details-marker { display: none; }
+  .skip summary::before {
+    content: "+";
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 1rem;
+    width: 12px;
+    flex: none;
+  }
+  .skip details[open] summary::before { content: "\2212"; }
+  .skip summary .src {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-left: auto;
+    font-weight: 400;
+  }
+  .skip details p {
+    margin: 12px 0 0 24px;
+    font-size: .93rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+
+  /* ---------- callout ---------- */
+  .flag {
+    background: var(--surface);
+    border: 1px solid var(--warm);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 26px 0;
+  }
+  .flag .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--warm-ink);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .flag p { margin: 0; font-size: .95rem; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 26px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: .87rem;
+  }
+  footer h2 { font-size: 1.05rem; margin-bottom: 14px; }
+  footer ol { padding-left: 20px; margin: 0; }
+  footer li { margin-bottom: 7px; line-height: 1.5; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 0 18px 64px; font-size: 16px; }
+    header.masthead { padding-top: 48px; }
+    .rec { padding: 18px 18px 20px; }
+    .chips { margin-left: 0; width: 100%; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">
+      <span>Competitive review</span>
+      <span>August 2026</span>
+      <span>Mindspace product strategy</span>
+    </p>
+    <h1>Mindspace does not have a features problem</h1>
+    <p class="standfirst">
+      Against Calm, Headspace, Insight Timer and Balance, the shipped feature set
+      is close to parity — and ahead on privacy and fairness. The gap is
+      <strong>what happens on day 11</strong>, when the streak breaks and the
+      subscription quietly stops making sense.
+    </p>
+  </header>
+
+  <section class="col">
+    <h2>The finding that should drive the roadmap</h2>
+    <p class="sec-note">Why retention, not features</p>
+    <p>
+      Churn in this category is not a content problem. It is a habit-formation
+      problem: subscriptions survive when a daily ritual holds and are cancelled
+      when it breaks — most often right after a lost streak or a stressful stretch
+      that crowded practice out. Roughly 96% of app users are gone by day 30, and
+      meditation sits at the harsh end of that curve.
+    </p>
+    <p>
+      The counterweight is unusually specific. Users who meditate <strong>ten days
+      running</strong> retain at materially higher rates six months later. That
+      single number is the most actionable thing in the whole competitive picture,
+      and it points at mechanics rather than library size.
+    </p>
+    <p>
+      There is a structural cruelty underneath it worth designing around: chronic
+      stress depletes executive function, which is the same resource required to
+      open an app and choose to sit still. The product asks people to spend the
+      thing they have least of, at the moment they have least of it. Every tap
+      between intent and audio is a place to lose them.
+    </p>
+
+    <div class="zones">
+      <div class="zone">
+        <span class="n">ZONE 1</span>
+        <h4>Never activated</h4>
+        <p>Installs, starts a trial, never reaches the moment the paywall promised. Cancels at renewal.</p>
+      </div>
+      <div class="zone">
+        <span class="n">ZONE 2</span>
+        <h4>Habit never formed</h4>
+        <p>Engages early, stops opening the app two to three weeks in. The largest single drop.</p>
+      </div>
+      <div class="zone">
+        <span class="n">ZONE 3</span>
+        <h4>Value erosion</h4>
+        <p>Got value early, then the product stopped surprising them. Nothing new to return for.</p>
+      </div>
+      <div class="zone">
+        <span class="n">ZONE 4</span>
+        <h4>Price audit</h4>
+        <p>Sees the charge, mentally asks whether the app earned it, decides it did not.</p>
+      </div>
+    </div>
+    <p style="font-size:.9rem;color:var(--muted);margin-bottom:0">
+      Recommendations below are ordered by which zone they attack and how cheaply.
+    </p>
+  </section>
+
+  <section>
+    <div class="col">
+      <h2>Who we are actually competing with</h2>
+      <p class="sec-note">Five archetypes, not two</p>
+      <p>
+        The existing internal analysis covers Calm and Headspace. Three others
+        matter more than their brand recognition suggests — Insight Timer resets
+        what "free" means, Balance resets what "personalised" means, and the
+        depth players show where a smaller catalogue can still win.
+      </p>
+    </div>
+
+    <div class="scroller">
+      <table>
+        <caption>Positioning and the one thing each does that we do not.</caption>
+        <thead>
+          <tr>
+            <th scope="col">App</th>
+            <th scope="col">Annual</th>
+            <th scope="col">Positioning</th>
+            <th scope="col">The distinctive mechanic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="app">Calm</td>
+            <td class="num">$79.99</td>
+            <td>Sensory escape; sleep-led. ~38% of the niche, 5M+ paid subscribers, ARR above $550M.</td>
+            <td>Sleep Stories as a franchise — and a B2B2C channel through employers and health plans that is now its <em>primary</em> growth engine.</td>
+          </tr>
+          <tr>
+            <td class="app">Headspace</td>
+            <td class="num">$69.99</td>
+            <td>Structured learning for beginners; friendly and clinical-adjacent.</td>
+            <td>Ebb, a conversational companion using motivational interviewing, now with voice. Notably it still only <em>selects</em> pre-recorded content.</td>
+          </tr>
+          <tr>
+            <td class="app">Insight Timer</td>
+            <td class="num">$59.99</td>
+            <td>Volume and community. 250,000+ free tracks, 17,000+ teachers, 30M members.</td>
+            <td>Live events every hour and topic-based groups with chat. A marketplace, not a catalogue — closer to YouTube than to Calm.</td>
+          </tr>
+          <tr>
+            <td class="app">Balance</td>
+            <td class="num">Free yr 1</td>
+            <td>Personalisation as the entire product. Aggressive trial.</td>
+            <td>Assembles the daily session from an audio library against your check-in, rather than picking a finished track from a shelf.</td>
+          </tr>
+          <tr>
+            <td class="app">Waking Up<br>Ten Percent</td>
+            <td class="num">~$99<br>~$99</td>
+            <td>Depth over breadth. Philosophy, and expert instruction for sceptics.</td>
+            <td>A point of view — one voice with a thesis, and high-quality video teaching. Small catalogues that still command premium pricing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="col">
+      <p>
+        The pricing spread is worth sitting with. Insight Timer gives away more
+        than we sell, and Balance gives away a year. Neither is competing on
+        catalogue size against Calm — they are competing on the cost of the first
+        habit. That is the same fight the retention data says we should pick.
+      </p>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2>What we already have</h2>
+    <p class="sec-note">Do not rebuild these</p>
+    <p>
+      Parity is genuinely close, and two areas are ahead of the field.
+      <strong>Timezone-aware streaks</strong> — grouping completions by the user's
+      IANA zone rather than UTC — is a fairness detail most competitors get wrong.
+      <strong>Encrypted mood and journal notes</strong> is a real differentiator in a
+      category under increasing scrutiny for handling mental-health data, and it is
+      currently unmarketed. So is a companion whose crisis classification runs
+      <em>before</em> the model and bypasses it entirely.
+    </p>
+    <ul class="shipped">
+      <li>Structured courses, ordered</li>
+      <li>Timezone-aware streaks</li>
+      <li>Heatmaps &amp; achievements</li>
+      <li>Encrypted mood check-ins</li>
+      <li>Unguided timer</li>
+      <li>Breathing exercises</li>
+      <li>AI companion, crisis-first</li>
+      <li>Licensed therapist booking</li>
+      <li>Browse by teacher</li>
+      <li>Offline downloads</li>
+      <li>Favourites &amp; collections</li>
+      <li>Local reminders</li>
+      <li>iOS home widget</li>
+      <li>HealthKit mindful minutes</li>
+      <li>English &amp; Spanish</li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="col">
+      <h2>Ship next</h2>
+      <p class="sec-note">Ranked by leverage per unit of build</p>
+      <p>
+        These four attack zones 1 and 2 — activation and habit — which is where the
+        subscribers are actually lost. Three of them are mechanics rather than
+        content, and all four build on infrastructure that already exists.
+      </p>
+    </div>
+
+    <div class="recs">
+
+      <article class="rec shipped-rec">
+        <div class="rec-head">
+          <span class="rank">01</span>
+          <h3>Streak insurance</h3>
+          <span class="chips">
+            <span class="chip done">Shipped</span>
+            <span class="chip build">Zone 2</span>
+            <span class="chip small">Small build</span>
+          </span>
+        </div>
+        <p>
+          Grant a small monthly allowance of rest days that auto-apply when a day is
+          missed, and say so before it is needed. The streak survives; the user is
+          told it was protected, not that they failed.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          Cancellation typically follows a streak loss. We have built heavy streak
+          gamification — streaks, heatmaps, achievement thresholds — with no
+          forgiveness anywhere in it. That combination manufactures the exact
+          moment the research identifies as the churn trigger. Right now a single
+          bad Tuesday can undo months, and the product's response is to show the
+          user a broken flame.
+        </div>
+        <p class="have">
+          <b>Already there:</b> streak computation is timezone-aware and centralised
+          in <code>stats</code>; achievements already read from the same metrics. This is
+          a rule change plus one column, not new infrastructure.
+        </p>
+      </article>
+
+      <article class="rec shipped-rec">
+        <div class="rec-head">
+          <span class="rank">02</span>
+          <h3>Make day ten the spine of the product</h3>
+          <span class="chips">
+            <span class="chip done">Shipped</span>
+            <span class="chip build">Zone 1 &amp; 2</span>
+            <span class="chip small">Small build</span>
+          </span>
+        </div>
+        <p>
+          Turn the first ten days into an explicit, visible commitment with its own
+          progress surface — not one course among many. Ten consecutive days is the
+          promise the onboarding makes and the thing the app celebrates.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          Ten consecutive days is the strongest published predictor of six-month
+          retention in this category. We already have a Basics course that is
+          almost exactly this, but it is presented as content rather than as a
+          commitment device, so nothing in the product treats day 10 as a milestone
+          that matters more than day 9 or day 11.
+        </div>
+        <p class="have">
+          <b>Already there:</b> the Basics course, enforced day ordering, and the
+          getting-started checklist. This is framing, copy and one progress surface.
+        </p>
+      </article>
+
+      <article class="rec shipped-rec">
+        <div class="rec-head">
+          <span class="rank">03</span>
+          <h3>One tap from intent to audio</h3>
+          <span class="chips">
+            <span class="chip done">Shipped</span>
+            <span class="chip build">Zone 2</span>
+            <span class="chip small">Small build</span>
+          </span>
+        </div>
+        <p>
+          A notification action that starts today's session directly. A widget
+          button that does the same. A home hero that begins on one tap with no
+          intermediate detail screen. Choosing is the tax; remove it.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          The people most in need of the app are the ones with the least executive
+          function left to spend on opening it and deciding what to play. Every
+          screen between the notification and the audio is a place where a
+          depleted user drops out. This is the cheapest possible intervention
+          against the largest drop-off zone.
+        </div>
+        <p class="have">
+          <b>Already there:</b> the iOS widget shipped this week, local reminders are
+          wired, and the home feed already resolves a single daily recommendation.
+          The pieces exist and are not yet connected end to end.
+        </p>
+      </article>
+
+      <article class="rec">
+        <div class="rec-head">
+          <span class="rank">04</span>
+          <h3>Assemble the daily session, don't pick it</h3>
+          <span class="chips">
+            <span class="chip build">Zone 3</span>
+            <span class="chip mid">Medium build</span>
+          </span>
+        </div>
+        <p>
+          Compose each day's session from the check-in, the onboarding goals and
+          recent history — an intro, a body and a close drawn from the library —
+          rather than selecting one finished track.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          This is Balance's whole product and the reason it can give away a year.
+          It attacks value erosion directly: an assembled session cannot go stale
+          the way a fixed catalogue does. The competitive bar is lower than it
+          looks — Headspace's Ebb is still selecting from pre-recorded content, so
+          parity does not require generated audio, only segmented audio and a
+          composition rule.
+        </div>
+        <p class="have">
+          <b>Already there:</b> the onboarding quiz, pre- and post-session mood values,
+          full completion history, voice packs, and a provider-agnostic LLM layer.
+          The missing piece is segmenting audio and a composition step in the home feed.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="col">
+      <h2>Worth planning now</h2>
+      <p class="sec-note">Bigger bets, clear rationale</p>
+    </div>
+
+    <div class="recs">
+
+      <article class="rec">
+        <div class="rec-head">
+          <span class="rank">05</span>
+          <h3>Read from Apple Health, not just write to it</h3>
+          <span class="chips">
+            <span class="chip build">Zone 3</span>
+            <span class="chip mid">Medium build</span>
+          </span>
+        </div>
+        <p>
+          We now write mindful minutes to HealthKit. Reading sleep and HRV back
+          closes the loop: a poor night or a depressed HRV trend should change what
+          the app offers that morning, and give the user a reason the suggestion
+          exists.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          Wearable-informed recommendation moved from novelty to expectation across
+          2026, with Oura, Whoop and Apple Watch all reachable through Health or
+          simple cloud APIs. It also produces the one thing a meditation app
+          normally cannot show: outside evidence that practice is doing something.
+        </div>
+        <p class="have">
+          <b>Already there:</b> HealthKit write landed this week, so entitlements and
+          the permission flow are in place. Reading is an additional scope, not a
+          new integration.
+        </p>
+      </article>
+
+      <article class="rec shipped-rec">
+        <div class="rec-head">
+          <span class="rank">06</span>
+          <h3>Reconsider the free tier's floor</h3>
+          <span class="chips">
+            <span class="chip done">Shipped</span>
+            <span class="chip build">Zone 4</span>
+            <span class="chip small">Small build</span>
+          </span>
+        </div>
+        <p>
+          Downloads are entirely Pro-gated. A small free allowance — two or three
+          sessions — costs little and removes a sharp edge from the free experience.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          Insight Timer gives away 250,000 tracks; a prospective user's sense of what
+          free should include is now set by that, not by Calm. High paywalls
+          correlate with immediate churn, and a user who never gets a session
+          offline never finds out whether the habit sticks. We already made the
+          right call once by keeping the timer free on every tier — the same
+          argument applies here.
+        </div>
+        <p class="have">
+          <b>Already there:</b> download limits are enforced server-side with a
+          per-tier cap, so this is a number, not a feature.
+        </p>
+      </article>
+
+      <article class="rec">
+        <div class="rec-head">
+          <span class="rank">07</span>
+          <h3>Decide whether Teams is real</h3>
+          <span class="chips">
+            <span class="chip build">Revenue</span>
+            <span class="chip large">Large build</span>
+          </span>
+        </div>
+        <p>
+          Either build the employer channel properly — organisations, seats, invites,
+          billing, aggregate reporting that cannot deanonymise an individual — or
+          remove the stub so it stops implying a capability that does not exist.
+        </p>
+        <div class="why">
+          <b>Rationale</b>
+          Calm's B2B2C distribution through employers and health plans is now its
+          primary growth engine, and Headspace sells to employers at similar scale.
+          It is the largest revenue lever on this list by a wide margin, and also
+          the largest build — it brings procurement, security review and aggregate
+          analytics with it.
+        </div>
+        <p class="have">
+          <b>Already there — and this is the flag:</b> <code>'teams'</code> exists in
+          <code>SubscriptionTier</code>, in the <code>subscription_tier</code> database enum,
+          and <code>isPro()</code> already grants it full access. Nothing implements it.
+          A tier that unlocks everything and has no way to be purchased is a loose
+          end worth closing deliberately.
+        </p>
+      </article>
+
+    </div>
+
+    <div class="flag col" style="border-color: var(--mint)">
+      <span class="tag" style="color: var(--mint-ink)">Status — built</span>
+      <p>
+        Recommendations 1, 2, 3 and 6 are implemented and verified against the
+        running stack. Streak insurance ships with a migration, fourteen unit
+        tests covering the date arithmetic, and an end-to-end check confirming a
+        one-day gap is bridged, a two-day absence is not, and the allowance
+        cannot be spent twice. Free downloads are capped at three and still
+        refuse Pro audio. A tapped reminder and the home-screen widget now both
+        land on <code>/start</code>, which resolves today&rsquo;s session and goes
+        straight to the player.
+      </p>
+      <p style="margin-top:14px">
+        What remains on this page is deliberately unbuilt: reading HRV back from
+        Apple Health, the Teams decision, and the four items below.
+      </p>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2>Deliberately not now</h2>
+    <p class="sec-note">Considered and declined, with reasons</p>
+    <p>
+      Each of these is a real competitor strength. None is a good use of the next
+      quarter, and saying so explicitly is more useful than a backlog that quietly
+      never reaches them.
+    </p>
+
+    <div class="skip">
+      <details>
+        <summary>Live events and community <span class="src">Insight Timer</span></summary>
+        <p>
+          Hourly live sessions and topic groups are Insight Timer's genuine moat, and
+          they are an operations business rather than a feature: scheduling,
+          moderation, and duty of care. Group chat adjacent to a mental-health
+          product carries real safety load, and we already handle crisis paths
+          carefully in the companion. Doing this badly is worse than not doing it.
+        </p>
+      </details>
+      <details>
+        <summary>Expert video instruction <span class="src">Ten Percent Happier</span></summary>
+        <p>
+          Video teaching is the clearest justification for premium pricing among the
+          depth players, but it is a content capital expense — production, talent,
+          and a video pipeline we do not have. Revisit once the audio catalogue is
+          fully exploited.
+        </p>
+      </details>
+      <details>
+        <summary>Celebrity narration <span class="src">Calm</span></summary>
+        <p>
+          The schema already supports billing a narrator prominently, so the
+          engineering is done. Who gets billed is a licensing negotiation, not a
+          build, and it should not be framed as a product gap.
+        </p>
+      </details>
+      <details>
+        <summary>Generated meditation audio <span class="src">Emerging</span></summary>
+        <p>
+          Reviews suggest users genuinely want generated content rather than
+          smarter recommendation — this is the one item here with real pull. But the
+          quality bar for a voice speaking intimately to someone in distress is
+          extremely high, and the failure mode is severe. Recommendation 04 captures
+          most of the benefit at a fraction of the risk; treat generation as the
+          step after it, not instead of it.
+        </p>
+      </details>
+    </div>
+  </section>
+
+  <footer class="col">
+    <h2>Sources</h2>
+    <ol>
+      <li><a href="https://www.pauso.com/blog/meditation-app-retention-rates">Meditation App Retention Rates: Headspace, Calm, and the 95% Drop-Off</a> — Pauso</li>
+      <li><a href="https://semnexus.com/app-subscription-churn-diagnosis-retention-playbook">App Subscription Churn: Diagnosis and Retention Playbook</a> — SEM Nexus</li>
+      <li><a href="https://userpilot.com/blog/mobile-app-retention/">Mobile App Retention in 2026: Why Do 96% of Users Leave by Day-30?</a> — Userpilot</li>
+      <li><a href="https://retentioncheck.com/churn-benchmarks/meditation-apps">Health &amp; Wellness Churn Rate: Benchmarks &amp; Analysis</a> — RetentionCheck</li>
+      <li><a href="https://sacra.com/c/calm/">Calm revenue, valuation &amp; funding</a> — Sacra</li>
+      <li><a href="https://research.contrary.com/company/calm">Calm Business Breakdown &amp; Founding Story</a> — Contrary Research</li>
+      <li><a href="https://www.businessofapps.com/data/calm-statistics/">Calm Revenue and Usage Statistics (2026)</a> — Business of Apps</li>
+      <li><a href="https://www.businesswire.com/news/home/20251208896917/en/Headspace-Rolls-out-Voice-Feature-for-Empathetic-AI-Companion-Ebb">Headspace Rolls out Voice Feature for Ebb</a> — BusinessWire</li>
+      <li><a href="https://ai-health-apps.com/reviews/headspace-review/">Headspace Review 2026: Ebb AI, Clinical Evidence</a> — AI Health Guide</li>
+      <li><a href="https://www.choosingtherapy.com/insight-timer-review/">Insight Timer App Review 2026</a> — ChoosingTherapy</li>
+      <li><a href="https://support.balanceapp.com/hc/en-us/articles/4407700854171-What-is-Balance">What is Balance?</a> — Balance Support</li>
+      <li><a href="https://neurosity.co/guides/waking-up-vs-ten-percent-happier">Waking Up vs Ten Percent Happier</a> — Neurosity</li>
+      <li><a href="https://ideausher.com/blog/wearables-enhance-meditation-wellness-apps/">How Wearables Can Enhance Meditation &amp; Wellness Apps</a> — Idea Usher</li>
+      <li><a href="https://www.therma.one/best/mood-trackers-that-connect-to-hrv">Best HRV-Synced Mood Trackers 2026</a> — Therma</li>
+      <li><a href="https://www.choosingtherapy.com/meditation-apps/">Best Meditation Apps of 2026</a> — ChoosingTherapy</li>
+    </ol>
+  </footer>
+
+</div>

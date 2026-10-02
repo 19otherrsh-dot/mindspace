@@ -1,0 +1,79 @@
+{
+  "expo": {
+    "name": "Mindspace",
+    "slug": "mindspace",
+    "version": "1.0.0",
+    "owner": "mindspace",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "mindspace",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0B1026",
+    "ios": {
+      "icon": "./assets/expo.icon",
+      "supportsTablet": true,
+      "bundleIdentifier": "app.mindspace.client",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"],
+        "NSHealthShareUsageDescription": "Mindspace reads your mindful minutes to generate insights.",
+        "NSHealthUpdateUsageDescription": "Mindspace writes mindful minutes to Apple Health when you complete a meditation."
+      },
+      "entitlements": {
+        "com.apple.developer.healthkit": true,
+        "com.apple.developer.healthkit.access": []
+      }
+    },
+    "android": {
+      "package": "app.mindspace.client",
+      "adaptiveIcon": {
+        "backgroundColor": "#0B1026",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0B1026",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 76
+        }
+      ],
+      "expo-audio",
+      "expo-secure-store",
+      "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#0B1026"
+        }
+      ],
+      [
+        "@bittingz/expo-widgets",
+        {
+          "ios": {
+            "src": "./widgets",
+            "mode": "production",
+            "moduleDependencies": []
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

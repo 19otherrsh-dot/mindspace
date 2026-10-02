@@ -1,0 +1,64 @@
+{
+  "name": "mindspace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mindspace — mindfulness & meditation app (Expo + Node/Postgres)",
+  "scripts": {
+    "infra:up": "docker compose up -d",
+    "infra:down": "docker compose down",
+    "infra:reset": "docker compose down -v && docker compose up -d",
+    "db:migrate": "pnpm --filter @mindspace/api migrate",
+    "db:seed": "pnpm --filter @mindspace/api seed",
+    "api": "pnpm --filter @mindspace/api dev",
+    "mobile": "pnpm --filter @mindspace/mobile start",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/smoke.ps1",
+    "test:therapy": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/therapy.ps1",
+    "test:companion": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/companion.ps1",
+    "test:features": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/features.ps1",
+    "check:encryption": "tsx scripts/check-encryption.ts",
+    "test:api": "pnpm smoke && pnpm test:features && pnpm test:therapy && pnpm test:companion && pnpm check:encryption",
+    "setup": "pnpm install && pnpm infra:up && pnpm db:migrate && pnpm db:seed"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ],
+    "overrides": {
+      "pretty-format": "29.7.0",
+      "jest": "29.7.0",
+      "jest-cli": "29.7.0",
+      "jest-config": "29.7.0",
+      "jest-runtime": "29.7.0",
+      "jest-mock": "29.7.0",
+      "jest-snapshot": "29.7.0",
+      "jest-haste-map": "29.7.0",
+      "jest-resolve": "29.7.0",
+      "jest-util": "29.7.0",
+      "jest-environment-node": "29.7.0",
+      "jest-environment-jsdom": "29.7.0",
+      "babel-jest": "29.7.0",
+      "@jest/core": "29.7.0",
+      "@jest/types": "29.6.3",
+      "@jest/globals": "29.7.0",
+      "@jest/transform": "29.7.0",
+      "@jest/environment": "29.7.0",
+      "@jest/expect": "29.7.0",
+      "@jest/fake-timers": "29.7.0",
+      "@jest/reporters": "29.7.0",
+      "@jest/test-result": "29.7.0",
+      "@jest/console": "29.7.0",
+      "@jest/schemas": "29.6.3",
+      "@jest/source-map": "29.6.3",
+      "expect": "29.7.0"
+    }
+  },
+  "dependencies": {
+    "jsc-safe-url": "0.2.2"
+  }
+}

@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to the same branch makes the in-flight run redundant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Keep this in step with packageManager in package.json.
+  PNPM_VERSION: 10.33.0
+  NODE_VERSION: 22
+
+jobs:
+  check:
+    name: Typecheck and test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Runs across every workspace package. This is the check that was
+      # silently passing while the mobile app did not compile — a stale
+      # binstub made `tsc` unresolvable there, so the step exited 0 having
+      # checked nothing.
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Test
+        run: pnpm -r test
+
+  bundle:
+    name: Bundle the app
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Metro resolves differently from tsc: a native module imported into the
+      # web build, or a missing platform split, only fails here.
+      - name: Export web bundle
+        working-directory: apps/mobile
+        run: npx expo export --platform web --output-dir /tmp/web-build
+
+  database:
+    name: Migrations and seed
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: mindspace
+          POSTGRES_PASSWORD: mindspace
+          POSTGRES_DB: mindspace
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U mindspace -d mindspace"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://mindspace:mindspace@localhost:5432/mindspace
+      # Redis is optional at runtime; leaving it unset exercises that path.
+      JWT_ACCESS_SECRET: ci-access-secret
+      JWT_REFRESH_SECRET: ci-refresh-secret
+      MOOD_ENCRYPTION_KEY: '0000000000000000000000000000000000000000000000000000000000000000'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Migrations are checksum-locked, so this also catches an edited
+      # migration that has already been applied elsewhere.
+      - name: Migrate
+        run: pnpm db:migrate
+
+      - name: Seed
+        run: pnpm db:seed
+
+      # Re-running must be a no-op; the seed claims to be idempotent.
+      - name: Seed again (idempotency)
+        run: pnpm db:seed
+
+      # The regression suites need a live server. They cover what unit tests
+      # cannot: entitlement gating, booking and licensing, the crisis path, and
+      # that confidential text is ciphertext on disk.
+      - name: Start the API
+        run: |
+          pnpm --filter @mindspace/api dev &
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:4000/health > /dev/null; then
+              echo "API up after ${i}s"; exit 0
+            fi
+            sleep 1
+          done
+          echo "API did not start"; exit 1
+
+      - name: API regression suites
+        shell: pwsh
+        run: pnpm test:api

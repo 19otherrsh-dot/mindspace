@@ -1,0 +1,927 @@
+<title>Five Questions, One Answer</title>
+
+<style>
+  /* ---------------------------------------------------------------
+     Companion to "The Retention Gap" — same palette, drawn from
+     apps/mobile/src/theme, so the pair reads as one series.
+  ---------------------------------------------------------------- */
+  :root {
+    --ink:        #0B1026;
+    --ink-soft:   #273056;
+    --muted:      #5A6280;
+    --faint:      #8189A3;
+    --ground:     #F7F8FC;
+    --surface:    #FFFFFF;
+    --line:       #E1E5F0;
+    --line-soft:  #EFF1F8;
+    --accent:     #5B7FFF;
+    --accent-ink: #3B5BD9;
+    --warm:       #F2A65A;
+    --warm-ink:   #A8641E;
+    --mint:       #4FD1A5;
+    --mint-ink:   #1C7A5A;
+    --rose:       #E86A92;
+    --rose-ink:   #B23A63;
+    --shadow:     0 1px 2px rgba(11,16,38,.05), 0 8px 24px -12px rgba(11,16,38,.14);
+
+    --serif: Charter, "Bitstream Charter", "Iowan Old Style", Georgia, Cambria, "Times New Roman", serif;
+    --sans:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono:  ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 68ch;
+    --wide: 1180px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #F2F4FA; --ink-soft: #C6CCDE; --muted: #9AA2BC; --faint: #79819D;
+      --ground: #0B1026; --surface: #131A35; --line: #273056; --line-soft: #1C2445;
+      --accent: #8AA4FF; --accent-ink: #A9BCFF;
+      --warm: #F2A65A; --warm-ink: #F5BC80;
+      --mint: #4FD1A5; --mint-ink: #6FE0BC;
+      --rose: #F08AAB; --rose-ink: #F5A9C1;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #F2F4FA; --ink-soft: #C6CCDE; --muted: #9AA2BC; --faint: #79819D;
+    --ground: #0B1026; --surface: #131A35; --line: #273056; --line-soft: #1C2445;
+    --accent: #8AA4FF; --accent-ink: #A9BCFF;
+    --warm: #F2A65A; --warm-ink: #F5BC80;
+    --mint: #4FD1A5; --mint-ink: #6FE0BC;
+    --rose: #F08AAB; --rose-ink: #F5A9C1;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--wide); margin: 0 auto; }
+  .col  { max-width: var(--measure); }
+
+  header.masthead {
+    padding: 72px 0 40px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 52px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--faint);
+    margin: 0 0 20px;
+    display: flex; flex-wrap: wrap; gap: 10px 18px;
+  }
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(2.2rem, 5vw, 3.3rem);
+    font-weight: 760; letter-spacing: -.032em; line-height: 1.05;
+    text-wrap: balance; margin: 0 0 22px; max-width: 010ch;
+    max-width: 21ch;
+  }
+  .standfirst {
+    font-size: 1.18rem; line-height: 1.55;
+    color: var(--ink-soft); max-width: 62ch; margin: 0;
+  }
+  .standfirst strong { color: var(--ink); font-weight: 600; }
+
+  section { margin: 0 0 64px; }
+  h2 {
+    font-family: var(--sans);
+    font-size: 1.55rem; font-weight: 700; letter-spacing: -.02em;
+    line-height: 1.2; text-wrap: balance; margin: 0 0 8px;
+  }
+  .sec-note {
+    font-family: var(--mono);
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 20px;
+  }
+  p { margin: 0 0 18px; }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+  code {
+    font-family: var(--mono); font-size: .85em;
+    background: var(--line-soft); padding: 1.5px 5px; border-radius: 4px; color: var(--ink);
+  }
+
+  /* ---------- the headline finding ---------- */
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--rose);
+    border-radius: 12px;
+    padding: 26px 28px;
+    margin: 0 0 28px;
+    box-shadow: var(--shadow);
+  }
+  .finding .tag {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: .11em; text-transform: uppercase;
+    color: var(--rose-ink); font-weight: 600; display: block; margin-bottom: 10px;
+  }
+  .finding h3 {
+    font-family: var(--sans); font-size: 1.25rem; font-weight: 700;
+    letter-spacing: -.018em; margin: 0 0 14px; text-wrap: balance;
+  }
+  .finding p:last-child { margin-bottom: 0; }
+
+  /* wiring table for the quiz */
+  .wiring { width: 100%; border-collapse: collapse; margin: 18px 0 6px; font-size: .92rem; }
+  .wiring th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--faint); font-weight: 500;
+    text-align: left; padding: 0 14px 9px 0; border-bottom: 1px solid var(--line);
+  }
+  .wiring td { padding: 10px 14px 10px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; color: var(--ink-soft); }
+  .wiring tr:last-child td { border-bottom: 0; }
+  .wiring td.q { font-family: var(--sans); font-weight: 600; color: var(--ink); }
+  .used   { font-family: var(--mono); font-size: 11px; color: var(--mint-ink); white-space: nowrap; }
+  .unused { font-family: var(--mono); font-size: 11px; color: var(--rose-ink); white-space: nowrap; font-weight: 600; }
+
+  /* ---------- flow blocks ---------- */
+  .flow {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .flow-head {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line);
+    background: var(--line-soft);
+  }
+  .flow-n {
+    font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums;
+    color: var(--faint); font-weight: 600;
+  }
+  .flow-head h3 {
+    font-family: var(--sans); font-size: 1.05rem; font-weight: 660;
+    letter-spacing: -.012em; margin: 0;
+  }
+  .verdict {
+    margin-left: auto;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid; white-space: nowrap; font-weight: 600;
+  }
+  .v-ahead  { color: var(--mint-ink); border-color: var(--mint); }
+  .v-parity { color: var(--muted);    border-color: var(--line); }
+  .v-gap    { color: var(--warm-ink); border-color: var(--warm); }
+  .v-crit   { color: var(--rose-ink); border-color: var(--rose); }
+  .v-fixed  { color: var(--mint-ink); border-color: var(--mint);
+              background: color-mix(in srgb, var(--mint) 12%, transparent); }
+
+  /* What shipped, inside a flow that used to be a gap. */
+  .shipped-note {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--mint) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--mint) 40%, transparent);
+    font-size: .85rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .shipped-note b {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--mint-ink);
+    display: block; margin-bottom: 4px; font-weight: 600;
+  }
+
+  .lanes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
+  .lane { background: var(--surface); padding: 16px 20px 18px; }
+  .lane .who {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--faint); display: block; margin-bottom: 9px;
+  }
+  .lane.ours .who { color: var(--accent); font-weight: 600; }
+  .lane p { font-size: .89rem; line-height: 1.52; margin: 0; color: var(--ink-soft); }
+  .lane ol, .lane ul { margin: 0; padding-left: 17px; font-size: .89rem; line-height: 1.5; color: var(--ink-soft); }
+  .lane li { margin-bottom: 4px; }
+
+  .takeaway {
+    padding: 15px 22px;
+    border-top: 1px solid var(--line);
+    font-size: .93rem;
+    color: var(--ink-soft);
+    background: var(--line-soft);
+  }
+  .takeaway b {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 5px; font-weight: 600;
+  }
+
+  /* ---------- ranked fixes ---------- */
+  .fixes { counter-reset: fix; margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .fix {
+    display: flex; gap: 16px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 18px 20px;
+  }
+  .fix::before {
+    counter-increment: fix; content: counter(fix, decimal-leading-zero);
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    font-weight: 600; flex: none; padding-top: 2px;
+  }
+  .fix h4 { font-family: var(--sans); font-size: 1rem; font-weight: 660; margin: 0 0 6px; letter-spacing: -.01em; }
+  .fix p { font-size: .91rem; margin: 0; color: var(--ink-soft); }
+  .cost {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .07em; text-transform: uppercase;
+    color: var(--muted); margin-left: auto; flex: none; white-space: nowrap; padding-top: 3px;
+  }
+
+  .ahead-list { display: flex; flex-direction: column; gap: 12px; margin-top: 22px; }
+  .ahead-item {
+    border-left: 2px solid var(--mint);
+    padding: 2px 0 2px 16px;
+  }
+  .ahead-item h4 { font-family: var(--sans); font-size: .98rem; font-weight: 640; margin: 0 0 4px; }
+  .ahead-item p { font-size: .91rem; margin: 0; color: var(--ink-soft); }
+
+  footer {
+    border-top: 1px solid var(--line); padding-top: 26px; margin-top: 12px;
+    color: var(--muted); font-size: .87rem;
+  }
+  footer h2 { font-size: 1.05rem; margin-bottom: 14px; }
+  footer ol { padding-left: 20px; margin: 0; }
+  footer li { margin-bottom: 7px; line-height: 1.5; }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-width: 780px) {
+    .lanes { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    body { padding: 0 18px 64px; font-size: 16px; }
+    header.masthead { padding-top: 48px; }
+    .verdict { margin-left: 0; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">
+      <span>Flow teardown</span>
+      <span>Headspace &middot; Calm &middot; Mindspace</span>
+      <span>August 2026</span>
+    </p>
+    <h1>We asked five questions and used one of the answers</h1>
+    <p class="standfirst">
+      Fourteen flows compared end to end. Mindspace matched or beat both rivals
+      on most of them — but the onboarding quiz, the single most studied screen
+      in this category, <strong>wrote four of its five answers to a database
+      column that nothing ever read</strong>. Six of the eight fixes below have
+      since shipped; what is left needs a decision rather than a build.
+    </p>
+  </header>
+
+  <section class="col">
+    <h2>The finding</h2>
+    <p class="sec-note">Verified in the source, not inferred</p>
+
+    <div class="finding">
+      <span class="tag">Critical — dead personalisation — now fixed</span>
+      <h3>The quiz collected intent and threw it away</h3>
+      <p>
+        <code>apps/mobile/src/app/(onboarding)/quiz.tsx</code> asks five questions
+        across five screens with a progress bar. The answers post to
+        <code>PUT /users/me/onboarding</code>, land in <code>onboarding_profiles</code>,
+        and are read back onto the user object. Only one of them changes anything
+        the user ever sees.
+      </p>
+
+      <table class="wiring">
+        <thead>
+          <tr>
+            <th scope="col">Question</th>
+            <th scope="col">Stored as</th>
+            <th scope="col">What consumes it</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="q">What brings you here?</td>
+            <td><code>goals</code></td>
+            <td><span class="used">USED</span> — <code>pickDaily()</code> weights the daily pick</td>
+          </tr>
+          <tr>
+            <td class="q">Have you meditated before?</td>
+            <td><code>experience_level</code></td>
+            <td><span class="unused">NOTHING</span></td>
+          </tr>
+          <tr>
+            <td class="q">How are you sleeping?</td>
+            <td><code>sleep_quality</code></td>
+            <td><span class="unused">NOTHING</span></td>
+          </tr>
+          <tr>
+            <td class="q">How much time can you give it?</td>
+            <td><code>daily_minutes</code></td>
+            <td><span class="unused">NOTHING</span></td>
+          </tr>
+          <tr>
+            <td class="q">When suits you best?</td>
+            <td><code>preferred_time</code></td>
+            <td><span class="unused">NOTHING</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:18px">
+        The last row is the expensive one. We ask when someone intends to
+        practise, store it, and then schedule their reminder at
+        <code>reminder_time DEFAULT '08:00'</code> — the column default, for
+        everyone. A user who taps <em>Evening</em> gets an eight in the morning
+        notification. Headspace measured exactly this mechanic: getting users to
+        commit to a specific time drove a <strong>7.5% lift in app opens and 4%
+        more unique return days</strong> during trial. We do the asking and skip
+        the acting.
+      </p>
+    </div>
+
+    <p>
+      Someone who answered "Never tried it" and "3 minutes" was offered the same
+      library, at the same lengths, as a decade-long practitioner with twenty
+      minutes. All five answers now change what the app does, and the quiz ends
+      on a recap that reads the plan back.
+    </p>
+
+    <div class="finding" style="border-color: var(--warm)">
+      <span class="tag" style="color: var(--warm-ink)">Uncovered while fixing it</span>
+      <h3>The free catalogue cannot honour the length answer</h3>
+      <p>
+        Wiring <code>daily_minutes</code> exposed a content problem underneath
+        it. The catalogue holds <strong>ten free meditations — every one of them
+        in <code>beginners</code>, every one exactly ten minutes</strong>.
+        Everything else is Pro.
+      </p>
+      <p>
+        So a free user who says "3 minutes" gets a ten-minute session, and one
+        who says "20 minutes" gets the same ten-minute session. The preference
+        works; there is nothing for it to choose between. The fallback picks the
+        closest available length and the reason line stops claiming a fit it did
+        not achieve, but no amount of code fixes a catalogue with one duration
+        in it. This is a content decision, and it currently undercuts the
+        personalisation on the tier most users experience first.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="col">
+      <h2>Flow by flow</h2>
+      <p class="sec-note">Fourteen flows, first tap to last</p>
+      <p>
+        Each block is the same journey in all three apps. The verdict is against
+        the pair, not against either one — <em>parity</em> means we are level with
+        the better of the two.
+      </p>
+    </div>
+
+    <!-- 01 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F01</span>
+        <h3>First run — install to first tap</h3>
+        <span class="verdict v-parity">Parity</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Welcome screens that set expectations with narrative framing before anything is asked. Onboarding is deliberately paced to preview what the product is for.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Ambient scene and sound on launch. Sign-up is mandatory before the paywall, but the user feels the product first.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p><code>welcome.tsx</code> → <code>sign-in.tsx</code>. Gradient hero, Apple/Google/email, and a guest path. Ambient audio loop plays on home open.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Level. The guest path is arguably better than Calm's mandatory sign-up — one tap to a working app.
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F02</span>
+        <h3>Personalisation quiz</h3>
+        <span class="verdict v-fixed">Fixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <ol>
+            <li>Experience level</li>
+            <li>Session length</li>
+            <li>What brings you here</li>
+            <li><strong>When you'll meditate</strong></li>
+            <li>Recap of your answers</li>
+          </ol>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Goals and experience asked before any premium prompt. Declared data personalises the home screen <em>immediately</em>, which is how they beat the cold-start problem.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Five questions with a progress bar and per-step gradient backdrops — the best-looking of the three — now closing on a recap that reads the plan back.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Was the worst flow in the product: four of five answers were stored and never read. All five now do something.
+        <div class="shipped-note">
+          <b>Shipped</b>
+          <code>preferred_time</code> writes through to the reminder — evening becomes 20:00, afternoon 13:00 — but only over the untouched 08:00 default, so a time set in Settings is never overwritten. <code>daily_minutes</code> constrains the daily pick by duration and orders by closeness; <code>experience_level</code> folds beginner content into a new user's pool; <code>sleep_quality: poor</code> surfaces the sleep row all day. The quiz now ends on a recap of the plan.
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F03</span>
+        <h3>First session</h3>
+        <span class="verdict v-ahead">Ahead</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Guided into a 3–5 minute meditation straight out of the questions, then asked how it felt.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Lands on a personalised home with a tooltip pointing at where to begin. Self-paced rather than pushed.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>The quiz ends at <code>/breathe?onboarding=1</code> — a real breathing exercise with haptic phase cues, not a form. Practice is the first experience.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        We take Headspace's strongest move and arguably improve on it: breathing needs no audio download and works before any entitlement check.
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F04</span>
+        <h3>Paywall and trial</h3>
+        <span class="verdict v-fixed">Fixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Paywall inside the onboarding sequence, before the habit exists. Trial framing throughout.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Paywall presented during onboarding — <em>most purchases happen here</em>. Seven-day trial on the annual plan, strikethrough pricing.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Now offered once at the end of onboarding, after the first breathing exercise. The six reactive entry points remain for anyone who meets a lock later.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Was a punishment screen every user met at a moment of friction. It now also appears as an offer, at the only honest moment to ask — once they have felt what the app does.
+        <div class="shipped-note">
+          <b>Shipped</b>
+          <code>/paywall?offer=1</code> changes the framing: different headline and copy, and a visible <em>Keep using the free plan</em> button. A lone ✕ in the corner reads as a trap at the end of onboarding, and someone who feels cornered on day one is not the one who renews on day thirty.
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F05</span>
+        <h3>Navigation and information architecture</h3>
+        <span class="verdict v-gap">Gap</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p><strong>Three tabs</strong>: Today, Explore, Profile. They previously had meditate / focus / movement / sleep tabs and <em>removed them</em> after user research.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Home-led, with Sleep given its own prominent destination — the category they own commercially.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p><strong>Five tabs</strong>: Today, Explore, Courses, Stats, Profile.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Headspace ran this experiment and simplified. Courses and Stats are both reachable from Today and Profile; as tabs they spend permanent screen real estate on destinations most users visit rarely. Worth testing three.
+      </div>
+    </div>
+
+    <!-- 06 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F06</span>
+        <h3>The daily return loop</h3>
+        <span class="verdict v-gap">Gap</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Today tab offers one-tap activities segmented by length <em>and</em> by time of day — morning, afternoon, night.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p><strong>Daily Calm</strong>: a brand-new original ~10 minute session every single day. Content freshness is a pull reason that works independently of the streak.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>A daily <em>recommendation</em> chosen from a static library by goals, plus an evening wind-down row after 20:00 local. Nothing is new on any given day.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        The distinction matters. A recommendation can repeat and users notice; a dated original cannot. This is the value-erosion problem from the retention review, and it is a content-operations commitment rather than a code change.
+      </div>
+    </div>
+
+    <!-- 07 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F07</span>
+        <h3>Session entry — taps to audio</h3>
+        <span class="verdict v-parity">Mixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>One tap from Today into playback. The tab exists to remove the choosing step.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>One tap from the home hero; browse paths go through a detail screen.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p><strong>Home hero: one tap</strong> — plays and pushes the player directly. <strong>Explore: two taps</strong> — card → detail screen → "Play session". Reminder and widget now go straight to <code>/start</code>.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        The primary path is level. The browse path costs an extra tap, which is defensible — a detail screen carries duration, teacher and download — but worth a play affordance directly on the card.
+      </div>
+    </div>
+
+    <!-- 08 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F08</span>
+        <h3>Player controls</h3>
+        <span class="verdict v-fixed">Fixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Deliberately minimal, advanced settings tucked away. Player art conveys the mood of the session.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Standard transport plus <strong>playback speed</strong> and one-tap <strong>share</strong>. Background art matches the session's tone.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Play/pause, rewind 10s, background-sound mixer, volume, minimise, end session, <strong>playback speed</strong> and a <strong>sleep timer</strong>. Category-gradient artwork. No forward skip or share.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        The mixer remains an advantage neither rival matches, and the two real omissions are closed.
+        <div class="shipped-note">
+          <b>Shipped</b>
+          Speed cycles 1× → 1.25× → 1.5× → 0.75× with pitch correction, sitting below the transport so the three primary controls stay unambiguous. The sleep timer (5–45 min) appears only on sleepcast-style formats, and <em>ends</em> the session rather than pausing — someone who fell asleep to a sleepcast practised, and losing their day to a timer they set themselves would be perverse.
+        </div>
+      </div>
+    </div>
+
+    <!-- 09 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F09</span>
+        <h3>Post-session</h3>
+        <span class="verdict v-ahead">Ahead</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Asks how you feel after finishing.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Check-in prompt; mood feeds recommendations.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Animated summary: streak, this-session / this-week / all-time minutes, newly unlocked badges, course completion, share sheet, and a post-session mood prompt that carries <code>context=post_session</code>. Now also reports a protected streak.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Clearly the richest of the three, and the only one that closes the pre/post mood loop explicitly.
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F10</span>
+        <h3>Check-ins</h3>
+        <span class="verdict v-fixed">Fixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Daily mood prompt on open, plus a periodic longer questionnaire covering stress, overwhelm and anger — closer to journalling.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Check-Ins cover <strong>mood, sleep quality, gratitude and reflections</strong> — four dimensions.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Mood and sleep — each a 1–5 value plus an encrypted free-text note. Mood carries pre- and post-session contexts; sleep is one reading per night, corrected in place.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Both dimensions are implemented better than either rival's — encrypted at rest, contextual, trend-charted. Gratitude and reflection remain Calm's, and are a smaller loss than sleep was.
+        <div class="shipped-note">
+          <b>Shipped</b>
+          <code>PUT/GET /activity/sleep</code>, keyed on one row per night so a resubmission corrects rather than duplicates. Sleep was previously asked about once in onboarding and never measured again, so neither the user nor we could tell whether the sleepcasts were doing anything. Notes are encrypted on the same path as mood — verified as ciphertext on disk, not just round-tripping.
+        </div>
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F11</span>
+        <h3>Reminders and habit mechanics</h3>
+        <span class="verdict v-fixed">Fixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Mindful Moments notifications; a bedtime nudge to begin winding down; onboarding commits the user to a specific practice time.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p><strong>Five separate reminder channels</strong>, each anchored to a different time of day and habit type — several distinct return touchpoints per day.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p><strong>Two channels.</strong> A practice reminder set from the quiz answer, and a separate bedtime wind-down with its own switch, time and Android channel. Local notifications, so they work offline.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Two of Calm's five, and the two that matter most — morning practice and bedtime are genuinely different habits. Tapping either now starts audio rather than opening a home screen.
+        <div class="shipped-note">
+          <b>Shipped</b>
+          Bedtime is off by default at 22:00, on its own low-importance channel so it can be silenced without losing the practice reminder. Because rebuilding the schedule cancels everything first, <code>syncAllReminders</code> rewrites both together — otherwise changing one would silently drop the other.
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F12</span>
+        <h3>Sleep and bedtime</h3>
+        <span class="verdict v-fixed">Mostly fixed</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Bedtime alarm. Sleepcasts open with a Wind Down — a three-minute breathing exercise — before the narrated landscape.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Sleep is a headline destination. Sleep Stories, music, soundscapes and wind-down routines, plus a standalone Calm Sleep app.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Bedtime nudge, wind-down chaining, a sleep timer, and nightly sleep tracking. The evening feed row now also appears all day for anyone who said they sleep badly. Still no dedicated sleep destination.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        The ritual now exists over content we already had. What remains is a navigational question — whether sleep deserves its own destination — which folds into the tab decision below.
+        <div class="shipped-note">
+          <b>Shipped</b>
+          Tapping the bedtime nudge runs Headspace's Wind Down shape: a breathing exercise first, then <code>/start?mode=sleep</code>, which picks from the wind-down row rather than the daily recommendation — a focus meditation is the wrong thing to hand someone trying to fall asleep.
+        </div>
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F13</span>
+        <h3>Progress and stats</h3>
+        <span class="verdict v-ahead">Ahead</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Profile tab: minutes, sessions, run of days.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Profile shows streak, mindful minutes and history. A broken streak is repaired by <em>manually editing your history</em> through a support article.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Dedicated dashboard: streak hero, 365-day heatmap, weekly bars, mood trends over 7 and 30 days, achievement badges, and rest-day balance. Streaks are timezone-aware.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Comfortably ahead, and the automatic rest day is a better answer than Calm's manual history editing — theirs requires knowing a support page exists.
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="flow">
+      <div class="flow-head">
+        <span class="flow-n">F14</span>
+        <h3>Offline and downloads</h3>
+        <span class="verdict v-ahead">Ahead</span>
+      </div>
+      <div class="lanes">
+        <div class="lane">
+          <span class="who">Headspace</span>
+          <p>Downloads on paid plans.</p>
+        </div>
+        <div class="lane">
+          <span class="who">Calm</span>
+          <p>Downloads on paid plans.</p>
+        </div>
+        <div class="lane ours">
+          <span class="who">Mindspace</span>
+          <p>Filesystem is the source of truth with a local JSON index, so the manager works in aeroplane mode. Three downloads on free, fifty on Pro.</p>
+        </div>
+      </div>
+      <div class="takeaway">
+        <b>Verdict</b>
+        Ahead on both mechanism and generosity — neither rival lets a free user take anything offline.
+      </div>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2>Where we are genuinely ahead</h2>
+    <p class="sec-note">Worth defending, and worth marketing</p>
+
+    <div class="ahead-list">
+      <div class="ahead-item">
+        <h4>Timezone-aware streaks</h4>
+        <p>Days are grouped by the user's IANA zone, not server UTC. Travel and late-night sitting do not cost a streak.</p>
+      </div>
+      <div class="ahead-item">
+        <h4>Automatic streak insurance</h4>
+        <p>One rest day a month, spent without being asked for. Calm's equivalent is a manual history edit documented in a help centre article.</p>
+      </div>
+      <div class="ahead-item">
+        <h4>Encrypted mood and journal notes</h4>
+        <p>Free text is AES-256-GCM encrypted before it reaches Postgres. Neither rival makes this claim, and it is currently unmarketed.</p>
+      </div>
+      <div class="ahead-item">
+        <h4>Crisis handling that bypasses the model</h4>
+        <p>Classification runs before the LLM and returns verified helplines directly. Never rate limited, never gated. Ebb escalates <em>through</em> the model.</p>
+      </div>
+      <div class="ahead-item">
+        <h4>Free unguided timer and breathing</h4>
+        <p>Both free on every tier, and the timer flows through the same completion, streak and achievement code as guided content.</p>
+      </div>
+      <div class="ahead-item">
+        <h4>Background sound mixer inside the player</h4>
+        <p>Per-session ambient layering with independent volume. Neither rival offers this at playback time.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2>What to fix, in order</h2>
+    <p class="sec-note">Ranked by leverage per unit of build</p>
+    <p>
+      The first six are built and verified against the running stack. The last
+      two are deliberately not — one needs an experiment, the other a content
+      commitment, and neither should be drifted into by an engineer at midnight.
+    </p>
+
+    <div class="fixes">
+      <div class="fix">
+        <div>
+          <h4>Turn the quiz answer into the reminder time</h4>
+          <p>Morning / afternoon / evening now map onto 08:00 / 13:00 / 20:00 and write to <code>reminder_time</code> when onboarding completes — but only over the untouched default, so a time chosen in Settings survives re-running the quiz. This is the mechanic Headspace measured at +7.5% app opens.</p>
+        </div>
+        <span class="cost" style="color:var(--mint-ink);font-weight:600">Shipped</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>Wire the other three answers</h4>
+          <p><code>daily_minutes</code> constrains the daily pick by duration and orders by closeness. <code>experience_level</code> folds beginner content into a new user's pool. <code>sleep_quality</code> promotes the sleep row all day for a poor sleeper. Fixing this also surfaced that the free catalogue has only one duration to choose from.</p>
+        </div>
+        <span class="cost" style="color:var(--mint-ink);font-weight:600">Shipped</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>Add a recap step and put the offer in onboarding</h4>
+          <p>The quiz now ends on a recap of the plan, and Pro is offered after the first breathing exercise rather than waiting for a collision with a lock. Declining is a visible button, not a corner ✕.</p>
+        </div>
+        <span class="cost" style="color:var(--mint-ink);font-weight:600">Shipped</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>Sleep timer and playback speed in the player</h4>
+          <p>The timer (5–45 min) shows only on sleepcast-style formats and ends the session rather than pausing, so the listening still counts. Speed cycles with pitch correction.</p>
+        </div>
+        <span class="cost" style="color:var(--mint-ink);font-weight:600">Shipped</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>A bedtime channel, then more channels</h4>
+          <p>A second reminder anchored to wind-down, chaining breathing into a sleepcast. Off by default at 22:00, on its own Android channel so it can be silenced independently. Calm runs five; one to two captures most of the gain.</p>
+        </div>
+        <span class="cost" style="color:var(--mint-ink);font-weight:600">Shipped</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>Extend check-ins beyond mood</h4>
+          <p>Nightly sleep quality, one row per night, notes encrypted on the same path as mood. Gratitude and reflection remain unbuilt and are a smaller loss.</p>
+        </div>
+        <span class="cost" style="color:var(--mint-ink);font-weight:600">Shipped</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>Test three tabs against five</h4>
+          <p>Headspace ran this and simplified. Courses and Stats are both reachable from elsewhere; as permanent tabs they may be costing more than they return.</p>
+        </div>
+        <span class="cost">Experiment</span>
+      </div>
+      <div class="fix">
+        <div>
+          <h4>Decide on a dated daily original</h4>
+          <p>Calm's freshest pull reason is that today's session did not exist yesterday. This is a content-operations commitment, not an engineering task, and should be decided rather than drifted into.</p>
+        </div>
+        <span class="cost">Content ops</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="col">
+    <h2>Sources</h2>
+    <ol>
+      <li><a href="https://www.purchasely.com/blog/headspace-behavioral-science-onboarding-experiment">Behavioral Science Boosts Headspace Course Starts by Over 100%</a> — Purchasely (quiz +7.6pp; commitment +7.5% opens, +4% return days)</li>
+      <li><a href="https://goodux.appcues.com/blog/headspaces-mindful-onboarding-sequence">Headspace's mindful onboarding sequence</a> — GoodUX</li>
+      <li><a href="https://www.useronboard.com/how-headspace-onboards-new-users/">How Headspace Onboards New Users</a> — UserOnboard</li>
+      <li><a href="https://developer.apple.com/news/?id=fkfnhq8u">Behind the Design: Headspace</a> — Apple Developer (tab simplification)</li>
+      <li><a href="https://goodux.appcues.com/blog/calm-app-new-user-experience">Calm's carefully curated new user experience</a> — GoodUX</li>
+      <li><a href="https://dev.to/paywallpro/complete-onboarding-breakdown-9-steps-from-first-screen-to-paywall-2j7">Complete Onboarding Breakdown: First Screen to Paywall</a> — PaywallPro</li>
+      <li><a href="https://support.calm.com/hc/en-us/articles/115005140414-What-are-the-Calm-Dailies-Daily-Meditations-Movement">What are the Calm Dailies?</a> — Calm Help Center</li>
+      <li><a href="https://support.calm.com/hc/en-us/articles/9699990936731-How-to-Use-Check-Ins">How to Use Check-Ins</a> — Calm Help Center</li>
+      <li><a href="https://support.calm.com/hc/en-us/articles/360008704893-How-to-Correct-a-Broken-Streak">How to Correct a Broken Streak</a> — Calm Help Center</li>
+      <li><a href="https://www.headspace.com/sleep/sleepcasts">Sleepcasts</a> — Headspace (Wind Down structure)</li>
+      <li><a href="https://www.sleep.com/sleep-tech/calm-vs-headspace">Calm vs. Headspace</a> — Sleep.com (bedtime alarm)</li>
+      <li><a href="https://screensdesign.com/showcase/calm">Calm UI Breakdown</a> — ScreensDesign (player controls)</li>
+      <li><a href="https://www.plotline.so/blog/streaks-for-gamification-in-mobile-apps">Streaks and Milestones for Gamification</a> — Plotline</li>
+    </ol>
+    <p style="margin-top:18px">
+      Mindspace behaviour was read from the source at
+      <code>apps/mobile/src/app/</code>, <code>apps/api/src/routes/</code> and
+      <code>apps/api/migrations/</code> rather than from documentation, so it
+      reflects what actually ships.
+    </p>
+  </footer>
+
+</div>

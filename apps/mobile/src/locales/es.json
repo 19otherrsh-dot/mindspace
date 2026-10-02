@@ -1,0 +1,34 @@
+{
+  "welcome": {
+    "skip": "Omitir",
+    "get_started": "Empezar",
+    "slides": {
+      "stress": {
+        "title": "Reduce el estrés",
+        "body": "Prácticas breves respaldadas por la ciencia que se adaptan a una jornada laboral."
+      },
+      "sleep": {
+        "title": "Duerme mejor",
+        "body": "Relatos y paisajes sonoros para pasar de la hiperactividad al sueño."
+      },
+      "focus": {
+        "title": "Concéntrate más",
+        "body": "Desarrolla la capacidad de atención que el resto del día intenta deshacer."
+      }
+    }
+  },
+  "signIn": {
+    "welcome_back": "Bienvenido de nuevo",
+    "create_account": "Crea tu cuenta",
+    "signup_description": "Tus estadísticas y descargas se guardan en tu cuenta.",
+    "login_description": "Inicia sesión para continuar desde donde lo dejaste.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "placeholder_password": "Al menos 8 caracteres",
+    "sign_in": "Iniciar sesión",
+    "sign_up": "Crear cuenta",
+    "continue_as_guest": "Continuar como invitado",
+    "continue_with_apple": "Continuar con Apple",
+    "continue_with_google": "Continuar con Google"
+  }
+}

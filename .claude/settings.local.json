@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(try { \\(Invoke-WebRequest -Uri \"http://localhost:4000/health\" -UseBasicParsing -TimeoutSec 10\\).Content } catch { \"health failed: $\\($_.Exception.Message\\)\" })"
+    ]
+  }
+}
